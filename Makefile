@@ -11,12 +11,6 @@ APP_KEY ?=
 # $(BUILD_DIR)/sdk; the manager is only needed for packaging.
 NBT_SDK_DIR ?= ../sdk
 NBT_MGR_DIR ?= ../manager
-# The QNX SDP builds only the SDK's nbt-runner, for the VM test. The
-# application is a module, built with the NBT toolchain; on the car, NBT
-# Manager's own nbt-runner loads it (bridge 1.7, runner).
-QNX_ENV ?=
-QNX_SCREEN_LIBDIR ?=
-
 CC ?= gcc
 CXX ?= g++
 
@@ -195,7 +189,7 @@ check-static-init: $(call app_objs,host)
 format:
 	clang-format -i src/*.cpp src/*.hpp tests/*.cpp
 
-# --- The module: built without the QNX SDP, loaded by nbt-runner
+# --- The module: built with the NBT toolchain, loaded by nbt-runner
 # (sdk/module). PicoDrive and the code it bundles are not GPL or LGPL (the
 # licence gate checks), so it runs in the runner's process. ---
 MOD_APP := $(BUILD_DIR)/nbt-picodrive.so
@@ -221,8 +215,8 @@ $(MOD_APP): $(MOD_OBJ) $(NBT_SDK_MOD_DEPS)
 
 module: $(MOD_APP)
 
-# --- The module in QNX 6.5 SP1 under QEMU (the SDK's tools/qnx65-vm; no GPU,
-# no sound: both faked): a health check, then the cartridge of
+# --- The module in the SDK's VM under QEMU (no GPU, no sound: both faked;
+# sdk/docs/native-apps.md for what its nbt-runner needs): a health check, then the cartridge of
 # tests/test_picodrive.py played, which must draw frames and stop cleanly. ---
 VM_GAME := $(BUILD_DIR)/vm/test.md
 VM_PLAY := NBT_LAUNCH=user NBT_SURFACE=5 NBT_RUNNER_FAKE_GL=1 NBT_RUNNER_FAKE_AUDIO=1 \
@@ -233,7 +227,8 @@ $(VM_GAME): tests/test_picodrive.py
 	python3 tests/test_picodrive.py --write-rom $@
 
 vm-test: $(NBT_SDK_RUNNER) $(MOD_APP) $(VM_GAME)
-	QEMU_RUN_SECS=240 $(NBT_SDK_ROOT)/tools/qnx65-vm/run.sh \
+	@test -n "$(NBT_SDK_VM_RUN)" || { echo "$(NBT_SDK_ROOT) has no VM: update that SDK checkout"; exit 1; }
+	QEMU_RUN_SECS=240 $(NBT_SDK_VM_RUN) \
 		-c "NBT_LAUNCH=check NBT_DATA_DIR=/dev/shmem nbt-runner --nbt-payload /proc/boot/$(notdir $(MOD_APP)) &" \
 		-c "waitfor /none 10" -c "slay -s TERM nbt-runner" -c "waitfor /none 3" \
 		-c "$(VM_PLAY) nbt-runner --nbt-payload /proc/boot/$(notdir $(MOD_APP)) --game test.md &" \

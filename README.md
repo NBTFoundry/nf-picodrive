@@ -39,7 +39,7 @@ game or BIOS is included: use only games you have the right to use.
 
 ## Status
 
-Built and tested on the desktop and in QNX 6.5 SP1 under QEMU; not yet tested
+Built and tested on the desktop and in the SDK's VM under QEMU; not yet tested
 in a car.
 
 ## Adding games
@@ -125,7 +125,7 @@ Changed from the phone app or NBT Manager's settings page; they apply at once.
 
 ## Bridge
 
-The package carries the module (built without the QNX SDP, loaded by NBT
+The package carries the module (built with the NBT toolchain, loaded by NBT
 Manager's `nbt-runner`) and declares bridge 1.7: `show`, `controller`, `files`
 and `runner` required, `status`, `live-settings` and `gamepad` optional, and
 the files policy
@@ -158,21 +158,22 @@ unit stops a misaligned access with SIGBUS, which x86 never shows.
 
 Head unit: PicoDrive is not GPL or LGPL code, so the application is a
 **module** (`sdk/docs/native-apps.md`): built with the NBT toolchain (`make -C
-../sdk toolchain` once), without any QNX file, and loaded by the `nbt-runner`
-NBT Manager ships (bridge 1.7, `runner`).
+../sdk toolchain` once) and loaded by the `nbt-runner` NBT Manager ships
+(bridge 1.7, `runner`).
 
 ```sh
 make -j"$(nproc)" module                                 # build/nbt-picodrive.so
 make APP_KEY=/path/to/apps-signing-key.pem package       # build/picodrive-<version>.nbt
-make QNX_ENV=… QNX_SCREEN_LIBDIR=… vm-test               # QNX 6.5 SP1 under QEMU
+make vm-test                                             # the SDK's VM under QEMU
 ```
 
 `package` signs the module with NBT Manager's packer
 (`../manager/tools/package.py`, or `NBT_MGR_DIR`), described by
-`release/package.args`; `make package-args` writes the PicoDrive version the
-pin builds, and `make test` fails when it lags. `QNX_ENV` and
-`QNX_SCREEN_LIBDIR` build the SDK's `nbt-runner` for the VM test only, the
-only use of the QNX SDP. `make notice` writes `legal/NOTICE.txt`.
+`release/package.args`; `make package-args` writes the PicoDrive version the pin
+builds, and `make test` fails when it lags. `vm-test` runs it in the SDK's VM,
+with the SDK's own `nbt-runner` (`sdk/docs/native-apps.md`, "Testing without a
+head unit", says what building it takes). `make notice` writes
+`legal/NOTICE.txt`.
 
 ### PicoDrive on the NBT toolchain
 
@@ -189,14 +190,14 @@ after upstream's own: `-w` and `-fno-lto` (its objects go into an archive).
 ## Releases
 
 `.github/workflows/ci.yml` runs the host tests, the same under ASan/UBSan and
-the alignment sanitizer, and the module build on every push and pull request.
-A `vX.Y.Z` tag runs `.github/workflows/release.yml`: NBT Manager's application
-release workflow builds the module on a plain runner with the NBT toolchain
-(no QNX SDP, no private image), signs it with the apps key after a maintainer
-approves the run (the `release` environment, secret `APPS_SIGNING_KEY`, tags
-`v*` only) and publishes `picodrive-X.Y.Z.nbt`, sequence
-`X*1000000 + Y*1000 + Z`. `release/sdk.ref` is the SDK commit both build
-against: [SDK 0.1.0](https://github.com/NBTFoundry/sdk/releases/tag/v0.1.0).
+the alignment sanitizer, and the module build on every push and pull request. A
+`vX.Y.Z` tag runs `.github/workflows/release.yml`: NBT Manager's application
+release workflow builds the module on a plain runner with the NBT toolchain (no
+private image), signs it with the apps key after a maintainer approves the run
+(the `release` environment, secret `APPS_SIGNING_KEY`, tags `v*` only) and
+publishes `picodrive-X.Y.Z.nbt`, sequence `X*1000000 + Y*1000 + Z`.
+`release/sdk.ref` is the SDK commit both build against: [SDK
+0.1.0](https://github.com/NBTFoundry/sdk/releases/tag/v0.1.0).
 
 ## To confirm on the head unit
 
