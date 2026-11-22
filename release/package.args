@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: MPL-2.0
+# The package description for tools/package.py (NBTFoundry/manager): one argument
+# per line. `make package` and the release workflow both use it; they add the
+# version, sequence, key, output and executable. Bridge 1.7: the payload is a
+# module built without the QNX SDP, run by NBT Manager's nbt-runner (runner);
+# the games come through `files`: cartridges one file each, a Mega-CD disc as a
+# game folder (its cue sheet or playlist and tracks: a folder, or a zip archive
+# unpacked on import) or one CHD image. Discs come from a USB stick: the phone
+# sends at most 64 MiB.
+--app
+picodrive
+--compat
+nbt_6.5_armv7
+--bridge
+1.7
+--bridge-uses
+show,controller,files,runner
+--bridge-optional
+status,live-settings,gamepad
+--bridge-files
+md,gen,smd,bin,32x,sms,gg,sg,sc,cue,iso,chd,m3u,wav,mp3,ogg|1024|16384|folders=m3u,cue
+--setting
+aspect|Aspect|4-3|4-3,pixel,full
+--setting
+filter|Filter|sharp|sharp,smooth,nearest
+--setting
+region|Region|auto|auto,us,europe,japan,japan_pal
+--setting
+renderer|Renderer|accurate|accurate,good,fast
+--setting
+sprite_limit|Sprite limit|on|on,off
+--setting
+recompiler|32X recompiler|on|on,off
+--setting
+overclock|68000 overclock|off|off,25,50,100
+--setting
+sound|Sound|on|on,off
+--setting
+show_fps|Show FPS|off|off,on
+--setting
+debug_log|Debug log|off|off,on
+# What the phone app shows before an install (NBT Manager's PROTOCOL.md,
+# "Package information"): the PicoDrive version the pin builds
+# (tools/package_version.py: `make package-args`; `make test` checks it), the
+# project, the licence and the notices.
+--property
+PicoDrive|2.05 (1b413e5)
+--property
+Project|PicoDrive (https://github.com/irixxxx/picodrive)
+--property
+Licence|PicoDrive licence (non-commercial)
+--text
+Sega Mega Drive, Mega-CD, 32X, Master System and Game Gear games by PicoDrive, for NBT Manager.
+--text=
+--text
+PicoDrive and its CPU cores may be shared only free of charge: no sale, no commercial use (their licences).
+--text
+FAME Motorola 68000 Emulation Library by Oscar Orallo. CZ80 by Stephane Dallongeville.
+--text
+No game or BIOS is included.
+--text=
+--text
+Source, licences and notices: https://github.com/NBTFoundry/nf-picodrive
