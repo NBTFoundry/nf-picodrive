@@ -1,0 +1,16 @@
+FAME (Fast and Accurate Motorola 68000 Emulation Library), terms of use, from
+its documentation (cpu/fame/fame.html in PicoDrive, which carries FAME/C, its C
+version):
+
+FAME may be distributed freely in unmodified form, as long as this document
+file is included.
+Nothing may be charged for this library. If you want to use it in a shareware
+or commercial application, contact me.
+The author will not be held liable for damages. FAME comes with absolutely
+NO WARRANTY. Anyway i will try to help you with any problem you have using FAME.
+If you do not agree with all of these terms, please remove FAME from your computer.
+You are encouraged to contact the author if you wish to use FAME in a commercial
+product (to negotiate licensing).
+Any program which uses FAME must include in its documentation or in the program
+itself the following credit text:
+FAME Motorola 68000 Emulation Library by Oscar Orallo (oscar@m68k.com)

@@ -1,0 +1,5 @@
+CZ80 (Z80 CPU emulator) version 0.91, Copyright 2004-2005 Stephane Dallongeville;
+its terms, from its readme.txt (cpu/cz80/readme.txt in PicoDrive):
+
+The emulator can be freely distribued and used for any non commercial
+project as long you don't forget to credit me somewhere :)
